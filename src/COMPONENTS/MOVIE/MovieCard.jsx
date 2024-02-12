@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { MovieContext } from "../../CONTEXT";
 import { getImgURL } from "../../utils/cine-utility";
 import MovieDetailsModal from "./MovieDetailsModal";
 import MovieStar from "./MovieStar";
@@ -7,6 +8,19 @@ import MovieStar from "./MovieStar";
 export default function MovieCard({ movie }) {
   const [showModal, setShowModal] = useState(false);
   const [selection, setSelection] = useState(null);
+  const { cardData, setCardData } = useContext(MovieContext);
+
+  const handleAddToCard = (e, movie) => {
+    e.stopPropagation();
+    const found = cardData.find((item) => {
+      return item.id === movie.id;
+    });
+    if (!found) {
+      setCardData([...cardData, movie]);
+    } else {
+      console.log(`alredy found ${cardData.length}`);
+    }
+  };
   const handleClose = () => {
     setSelection(null);
     setShowModal(false);
@@ -18,9 +32,10 @@ export default function MovieCard({ movie }) {
   };
   return (
     <>
-      {showModal && <MovieDetailsModal onClose={handleClose} movie={selection} />}
+      {showModal && <MovieDetailsModal onClose={handleClose} movie={selection} onCartAdd={handleAddToCard} />}
+
       <figure className="p-4 border border-black/10 shadow-sm dark:border-white/10 rounded-xl">
-        <a onClick={() => handleMovieSelection(movie)}>
+        <button href="#" onClick={() => handleMovieSelection(movie)}>
           <img className="w-full object-cover" src={getImgURL(movie.cover)} alt="" />
           <figcaption className="pt-4">
             <h3 className="text-xl mb-1">{movie.title}</h3>
@@ -28,12 +43,17 @@ export default function MovieCard({ movie }) {
             <div className="flex items-center space-x-1 mb-5">
               <MovieStar value={movie.rating} />
             </div>
-            <a className="bg-primary rounded-lg py-2 px-5 flex items-center justify-center gap-2 text-[#171923] font-semibold text-sm" href="#">
+
+            <a
+              className="bg-primary rounded-lg py-2 px-5 flex items-center justify-center gap-2 text-[#171923] font-semibold text-sm"
+              href="#"
+              onClick={(e) => handleAddToCard(e, movie)}
+            >
               <img src="./assets/tag.svg" alt="" />
               <span>$ {movie.price} | Add to Cart</span>
             </a>
           </figcaption>
-        </a>
+        </button>
       </figure>
     </>
   );
