@@ -1,4 +1,4 @@
-const getImgUrl = (name) => {
+const getImgURL = (name) => {
   return new URL(`../assets/movie-covers/${name}`, import.meta.url).href;
 };
-export { getImgUrl };
+export { getImgURL };
